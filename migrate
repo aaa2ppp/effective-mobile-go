@@ -1,0 +1,8 @@
+#/bin/sh
+
+# Usage: migrate {up|down}
+# for more see `goose -h`
+
+. .env
+cd migrations && \
+GOOSE_DRIVER=postgres GOOSE_DBSTRING="user=$DB_USER dbname=$DB_NAME sslmode=disable" goose $@

@@ -1,0 +1,299 @@
+basePath: /api/v1
+definitions:
+  handler.createSongRequest:
+    properties:
+      group:
+        example: Muse
+        type: string
+      song:
+        example: Supermassive Black Hole
+        type: string
+    type: object
+  handler.createSongResponse:
+    properties:
+      song:
+        $ref: '#/definitions/handler.songDetail'
+    type: object
+  handler.emptyResponse:
+    type: object
+  handler.errorResponse:
+    properties:
+      error:
+        $ref: '#/definitions/handler.httpError'
+    type: object
+  handler.getSongResponse:
+    properties:
+      song:
+        $ref: '#/definitions/handler.songDetail'
+    type: object
+  handler.httpError:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  handler.listSongsResponse:
+    properties:
+      songs:
+        items:
+          $ref: '#/definitions/handler.songDetail'
+        type: array
+    type: object
+  handler.songDetail:
+    properties:
+      group:
+        type: string
+      id:
+        type: integer
+      link:
+        type: string
+      name:
+        type: string
+      release:
+        example: 02.01.2006
+        type: string
+      text:
+        type: string
+    type: object
+  handler.updateSongRequest:
+    properties:
+      link:
+        type: string
+      release:
+        example: 02.01.2006
+        type: string
+      text:
+        type: string
+    type: object
+  handler.updateSongResponse:
+    properties:
+      song:
+        $ref: '#/definitions/handler.songDetail'
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  license:
+    name: Apache 2.0
+  title: Song Library
+  version: "1.0"
+paths:
+  /songs:
+    get:
+      parameters:
+      - description: Song name
+        in: query
+        name: song
+        type: string
+      - description: Song group name
+        in: query
+        name: group
+        type: string
+      - description: 'Song release date (example: 02.01.2006)'
+        in: query
+        name: reliase
+        type: string
+      - description: Song text should contain it
+        in: query
+        name: text
+        type: string
+      - description: Song link
+        in: query
+        name: link
+        type: string
+      - description: Offeset
+        in: query
+        name: offset
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.listSongsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: List song library
+      tags:
+      - songs
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateSongRequest
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/handler.createSongRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.createSongResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Create song enrty
+      tags:
+      - songs
+  /songs/{id}:
+    delete:
+      parameters:
+      - description: Song id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.emptyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Delete song library entry
+      tags:
+      - songs
+    get:
+      parameters:
+      - description: Song id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getSongResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get song entry by id
+      tags:
+      - songs
+    post:
+      parameters:
+      - description: Song id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: UpdateSongRequest
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/handler.updateSongRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.updateSongResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: List song library
+      tags:
+      - songs
+  /songs/{id}/text:
+    get:
+      parameters:
+      - description: Song id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Offeset
+        in: query
+        name: offset
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getSongResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get song verses text
+      tags:
+      - songs
+swagger: "2.0"
