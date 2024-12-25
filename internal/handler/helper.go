@@ -99,13 +99,13 @@ func (x helper) GetID() (uint64, error) {
 	if s == "" {
 
 		x.Log().Error("no ID in the path", "path", x.r.URL.Path)
-		return 0, ErrBadRequest
+		return 0, ErrInternalError
 	}
 
 	v, err := strconv.ParseUint(s, 10, 64)
 	if err != nil {
 
-		x.Log().Error("can't parse ID", "error", err, "path", x.r.URL.Path)
+		x.Log().Debug("can't parse ID", "error", err, "path", x.r.URL.Path)
 		return 0, ErrBadRequest
 	}
 
@@ -117,13 +117,13 @@ func (x helper) DecodeBody(req any) error {
 	body, err := io.ReadAll(x.r.Body)
 	if err != nil {
 
-		x.Log().Error("can't reade request body", "error", err)
+		x.Log().Error("can't read request body", "error", err)
 		return ErrInternalError
 	}
 
 	if err := json.Unmarshal(body, &req); err != nil {
 
-		x.Log().Error("can't parse body", "error", err, "body", body)
+		x.Log().Debug("can't parse body", "error", err, "body", body)
 		return ErrBadRequest
 	}
 

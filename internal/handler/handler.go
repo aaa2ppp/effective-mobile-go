@@ -95,14 +95,14 @@ func (h handler) createSongHandler(w http.ResponseWriter, r *http.Request) {
 
 	if req.Song == "" {
 
-		x.Log().Error("song is required")
+		x.Log().Debug("song is required")
 		x.WriteError(ErrBadRequest)
 		return
 	}
 
 	if req.Group == "" {
 
-		x.Log().Error("group is required")
+		x.Log().Debug("group is required")
 		x.WriteError(ErrBadRequest)
 		return
 	}
@@ -111,6 +111,8 @@ func (h handler) createSongHandler(w http.ResponseWriter, r *http.Request) {
 		Name:  req.Song,
 		Group: req.Group,
 	}
+
+	x.Log().Debug("http request parsed", "song", song)
 
 	song, err := h.CreateSong(x.Ctx(), song)
 	if err != nil {
@@ -175,7 +177,7 @@ func (h handler) listSongsHandler(w http.ResponseWriter, r *http.Request) {
 			v, err := model.ParseDate(s)
 			if err != nil {
 
-				x.Log().Error("can't parse release date", "error", err, "release", s)
+				x.Log().Debug("can't parse release date", "error", err, "release", s)
 				x.WriteError(ErrBadRequest)
 				return
 			}
@@ -200,7 +202,7 @@ func (h handler) listSongsHandler(w http.ResponseWriter, r *http.Request) {
 			v, err := strconv.ParseUint(s, 10, 64)
 			if err != nil {
 
-				x.Log().Error("can't parse offset", "error", err)
+				x.Log().Debug("can't parse offset", "error", err)
 				x.WriteError(ErrBadRequest)
 				return
 			}
@@ -213,13 +215,13 @@ func (h handler) listSongsHandler(w http.ResponseWriter, r *http.Request) {
 			v, err := strconv.ParseUint(s, 10, 64)
 			if err != nil {
 
-				x.Log().Error("can't parse limit", "error", err)
+				x.Log().Debug("can't parse limit", "error", err)
 				x.WriteError(ErrBadRequest)
 				return
 			}
 			if v == 0 {
 
-				x.Log().Error("limit can not be 0", "error", err)
+				x.Log().Debug("limit can not be 0", "error", err)
 				x.WriteError(ErrBadRequest)
 				return
 			}
@@ -334,7 +336,7 @@ func (h handler) getSongTextHandler(w http.ResponseWriter, r *http.Request) {
 			v, err := strconv.ParseUint(s, 10, 64)
 			if err != nil {
 
-				x.Log().Error("can't parse offset", "error", err)
+				x.Log().Debug("can't parse offset", "error", err)
 				x.WriteError(ErrBadRequest)
 				return
 			}
@@ -347,13 +349,13 @@ func (h handler) getSongTextHandler(w http.ResponseWriter, r *http.Request) {
 			v, err := strconv.ParseUint(s, 10, 64)
 			if err != nil {
 
-				x.Log().Error("can't parse limit", "error", err)
+				x.Log().Debug("can't parse limit", "error", err)
 				x.WriteError(ErrBadRequest)
 				return
 			}
 			if v == 0 {
 
-				x.Log().Error("limit can not be 0")
+				x.Log().Debug("limit can not be 0")
 				x.WriteError(ErrBadRequest)
 				return
 			}
