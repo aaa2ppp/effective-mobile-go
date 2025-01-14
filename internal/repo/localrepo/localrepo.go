@@ -26,7 +26,7 @@ func New(db *sql.DB) LocalRepo {
 
 type SongDetail = model.SongDetail
 
-// CreateSong всегда возвращает детальную информацию о песне. Если в базе нет гуппы или песни,
+// CreateSong всегда возвращает детальную информацию о песне. Если в базе нет группы или песни,
 // то они будут созданы на основаннии входящих данных.
 func (r LocalRepo) CreateSong(ctx context.Context, song SongDetail) (SongDetail, error) {
 	var zero SongDetail
@@ -71,7 +71,7 @@ func (r LocalRepo) CreateSong(ctx context.Context, song SongDetail) (SongDetail,
 	return song, nil
 }
 
-// GetSong возвращает детальную информацию о пресне по ID. Есле в базе нет такого ID возвращает ErrNotFound.
+// GetSong возвращает детальную информацию о песне по ID. Есле в базе нет такого ID возвращает ErrNotFound.
 func (r LocalRepo) GetSong(ctx context.Context, songID uint64) (SongDetail, error) {
 	x := newHelper(ctx, "GetSong")
 	var zero SongDetail
@@ -201,7 +201,7 @@ func (r LocalRepo) ListSongs(ctx context.Context, req SongListFilters) ([]SongDe
 type UpdateSongRequest = model.SongUpdate
 
 // UpdateSong обновляет информацию о песне с указанным ID. Возвращает детальную информацию о песне.
-// Если песьня с указанным ID отсутствует в базе, то возвращает ErrNotFound.
+// Если песня с указанным ID отсутствует в базе, то возвращает ErrNotFound.
 func (r LocalRepo) UpdateSong(ctx context.Context, req UpdateSongRequest) (SongDetail, error) {
 	x := newHelper(ctx, "UpdateSong")
 
