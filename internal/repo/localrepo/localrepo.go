@@ -195,6 +195,11 @@ func (r LocalRepo) ListSongs(ctx context.Context, req SongListFilters) ([]SongDe
 		resp = append(resp, song)
 	}
 
+	if err := rows.Err(); err != nil {
+		x.Log().Error("can't get next row", "error", err)
+		return zero, ErrInternalError
+	}
+
 	return resp, nil
 }
 
