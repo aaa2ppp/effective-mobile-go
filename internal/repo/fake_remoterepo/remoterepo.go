@@ -35,6 +35,6 @@ func (r RemoteRepo) GetSong(ctx context.Context, song SongDetail) (SongDetail, e
 	}
 
 	log := logger.GetLoggerFromContextOrDefault(ctx).WithGroup(loogerGroup)
-	log.Error("song not found on remote server", "op", op, "song", song)
+	log.Debug("song not found on remote server", "op", op, "song", song)
 	return zero, model.ErrNotFound
 }

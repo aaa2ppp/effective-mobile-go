@@ -56,18 +56,25 @@ func (r RemoteRepo) GetSong(ctx context.Context, song SongDetail) (SongDetail, e
 
 	if resp.StatusCode != http.StatusOK {
 
-		var err error
+		var (
+			writeLog func(msg string, args ...any)
+			err      error
+		)
+
 		switch resp.StatusCode {
 		case http.StatusBadRequest:
+			writeLog = log(ctx).Debug
 			err = ErrBadRequest
 		case http.StatusNotFound:
+			writeLog = log(ctx).Debug
 			err = ErrNotFound
 		default:
+			writeLog = log(ctx).Error
 			err = ErrInternalError
 		}
 
 		body, _ := io.ReadAll(resp.Body)
-		log(ctx).Error("remote server returned not OK status", "op", op, "url", url,
+		writeLog("remote server returned not OK status", "op", op, "url", url,
 			"statusCode", resp.StatusCode, "body", lib.UnsafeString(body))
 		return zero, err
 	}
