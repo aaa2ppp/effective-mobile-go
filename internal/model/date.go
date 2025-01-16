@@ -38,7 +38,11 @@ func (d Date) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (d *Date) UnmarshalJSON(b []byte) error {
-	s, err := strconv.Unquote(lib.UnsafeString(b))
+	s := lib.UnsafeString(b)
+	if s == "null" {
+		return nil // no-op
+	}
+	s, err := strconv.Unquote(s)
 	if err != nil {
 		return err
 	}
