@@ -16,7 +16,7 @@ import (
 	"github.com/pressly/goose/v3"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 
-	_ "effective-mobile-go/docs"
+	"effective-mobile-go/docs"
 	"effective-mobile-go/internal/config"
 	"effective-mobile-go/internal/handler"
 	"effective-mobile-go/internal/middleware"
@@ -31,7 +31,6 @@ import (
 //	@title			Song Library
 //	@version		1.0
 //	@license.name	Apache 2.0
-//	@host			localhost:8080
 //	@BasePath		/api/v1
 func main() {
 
@@ -68,7 +67,8 @@ func main() {
 
 	// setup router
 	router := http.NewServeMux()
-	router.Handle("/swagger/", httpSwagger.Handler(httpSwagger.URL("http://localhost:8080/swagger/doc.json")))
+	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%d", cfg.Server.Port)
+	router.Handle("/swagger/", httpSwagger.Handler(httpSwagger.URL("http://"+docs.SwaggerInfo.Host+"/swagger/doc.json")))
 	router.Handle("/api/v1/", http.StripPrefix("/api/v1", handler.New(service)))
 
 	server := setupHTTPServer(middleware.Logging(router), cfg.Server)
