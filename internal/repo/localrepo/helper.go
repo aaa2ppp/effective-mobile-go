@@ -15,8 +15,8 @@ type helper struct {
 	log *slog.Logger
 }
 
-func newHelper(ctx context.Context, op string) helper {
-	return helper{ctx: ctx, op: op}
+func newHelper(ctx context.Context, op string) *helper {
+	return &helper{ctx: ctx, op: op}
 }
 
 func (x *helper) Log() *slog.Logger {

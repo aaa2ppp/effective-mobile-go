@@ -23,8 +23,8 @@ type helper struct {
 	log *slog.Logger
 }
 
-func newHelper(op string, w http.ResponseWriter, r *http.Request) helper {
-	return helper{
+func newHelper(op string, w http.ResponseWriter, r *http.Request) *helper {
+	return &helper{
 		op: op,
 		w:  w,
 		r:  r,
@@ -42,7 +42,7 @@ func (x *helper) Log() *slog.Logger {
 	return x.log
 }
 
-func (x helper) Ctx() context.Context {
+func (x *helper) Ctx() context.Context {
 	return x.r.Context()
 }
 
@@ -55,7 +55,7 @@ type httpError struct {
 	Message string `json:"message,omitempty"`
 }
 
-func (x helper) WriteError(err error) {
+func (x *helper) WriteError(err error) {
 
 	var httpErr *model.Error
 	var resp errorResponse
@@ -84,7 +84,7 @@ func (x helper) WriteError(err error) {
 	x.WriteResponse(&resp)
 }
 
-func (x helper) WriteResponse(resp any) {
+func (x *helper) WriteResponse(resp any) {
 
 	x.w.Header().Add("content-type", "application/json")
 
@@ -94,7 +94,7 @@ func (x helper) WriteResponse(resp any) {
 	}
 }
 
-func (x helper) GetID() (uint64, error) {
+func (x *helper) GetID() (uint64, error) {
 
 	s := x.r.PathValue("id")
 	if s == "" {
@@ -113,7 +113,7 @@ func (x helper) GetID() (uint64, error) {
 	return v, nil
 }
 
-func (x helper) DecodeBody(req any) error {
+func (x *helper) DecodeBody(req any) error {
 
 	body, err := io.ReadAll(x.r.Body)
 	if err != nil {
