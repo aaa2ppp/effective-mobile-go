@@ -134,7 +134,7 @@ func (h handler) createSongHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type listSongsResponse struct {
-	Songs []songDetail
+	Songs []songDetail `json:"songs"`
 }
 
 // listSongsHandler godoc
@@ -144,7 +144,7 @@ type listSongsResponse struct {
 //	@Produce	json
 //	@Param		song	query		string	false	"Song name"
 //	@Param		group	query		string	false	"Song group name"
-//	@Param		reliase	query		string	false	"Song release date (example: 02.01.2006)"
+//	@Param		release	query		string	false	"Song release date (example: 02.01.2006)"
 //	@Param		text	query		string	false	"Song text should contain it"
 //	@Param		link	query		string	false	"Song link"
 //	@Param		offset	query		uint64	false	"Offeset"
@@ -158,75 +158,61 @@ func (h handler) listSongsHandler(w http.ResponseWriter, r *http.Request) {
 	x := newHelper("listSongsHandler", w, r)
 
 	var req model.SongFilters
+	q := r.URL.Query()
 
-	{
-		s := r.FormValue("song")
-		if s != "" {
-			req.Name = &s
-		}
+	if s := q.Get("song"); s != "" {
+		req.Name = &s
 	}
-	{
-		s := r.FormValue("group")
-		if s != "" {
-			req.Group = &s
-		}
-	}
-	{
-		s := r.FormValue("release")
-		if s != "" {
-			v, err := model.ParseDate(s)
-			if err != nil {
 
-				x.Log().Debug("can't parse release date", "error", err, "release", s)
-				x.WriteError(ErrBadRequest)
-				return
-			}
-			req.Release = &v
-		}
+	if s := q.Get("group"); s != "" {
+		req.Group = &s
 	}
-	{
-		s := r.FormValue("text")
-		if s != "" {
-			req.Text = &s
-		}
-	}
-	{
-		s := r.FormValue("link")
-		if s != "" {
-			req.Link = &s
-		}
-	}
-	{
-		s := r.FormValue("offset")
-		if s != "" {
-			v, err := strconv.ParseUint(s, 10, 64)
-			if err != nil {
 
-				x.Log().Debug("can't parse offset", "error", err)
-				x.WriteError(ErrBadRequest)
-				return
-			}
-			req.Offset = &v
+	if s := q.Get("release"); s != "" {
+		v, err := model.ParseDate(s)
+		if err != nil {
+
+			x.Log().Debug("can't parse release date", "error", err, "release", s)
+			x.WriteError(ErrBadRequest)
+			return
 		}
+		req.Release = &v
 	}
-	{
-		s := r.FormValue("limit")
-		if s != "" {
-			v, err := strconv.ParseUint(s, 10, 64)
-			if err != nil {
 
-				x.Log().Debug("can't parse limit", "error", err)
-				x.WriteError(ErrBadRequest)
-				return
-			}
-			if v == 0 {
+	if s := q.Get("text"); s != "" {
+		req.Text = &s
+	}
 
-				x.Log().Debug("limit can not be 0", "error", err)
-				x.WriteError(ErrBadRequest)
-				return
-			}
-			req.Limit = &v
+	if s := q.Get("link"); s != "" {
+		req.Link = &s
+	}
+
+	if s := q.Get("offset"); s != "" {
+		v, err := strconv.ParseUint(s, 10, 64)
+		if err != nil {
+
+			x.Log().Debug("can't parse offset", "error", err)
+			x.WriteError(ErrBadRequest)
+			return
 		}
+		req.Offset = &v
+	}
+
+	if s := q.Get("limit"); s != "" {
+		v, err := strconv.ParseUint(s, 10, 64)
+		if err != nil {
+
+			x.Log().Debug("can't parse limit", "error", err)
+			x.WriteError(ErrBadRequest)
+			return
+		}
+		if v == 0 {
+
+			x.Log().Debug("limit can not be 0", "error", err)
+			x.WriteError(ErrBadRequest)
+			return
+		}
+		req.Limit = &v
 	}
 
 	x.Log().Debug("http request parsed", "req", req)
@@ -299,7 +285,7 @@ func (h handler) getSongHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type getSongTextResponse struct {
-	Verses []string `json:"verses,omitempty"`
+	Verses []string `json:"verses"`
 }
 
 // getSongTextHandler godoc
@@ -310,7 +296,7 @@ type getSongTextResponse struct {
 //	@Param		id		path		uint	true	"Song id"
 //	@Param		offset	query		uint64	false	"Offeset"
 //	@Param		limit	query		uint64	false	"Limit"
-//	@Success	200		{object}	getSongResponse
+//	@Success	200		{object}	getSongTextResponse
 //	@Failure	400		{object}	errorResponse
 //	@Failure	404		{object}	errorResponse
 //	@Failure	500		{object}	errorResponse
@@ -321,6 +307,7 @@ func (h handler) getSongTextHandler(w http.ResponseWriter, r *http.Request) {
 	x.Log().Debug("getSongTextHandler")
 
 	var req model.GetSongTextRequest
+	q := r.URL.Query()
 
 	{
 		v, err := x.GetID()
@@ -330,37 +317,33 @@ func (h handler) getSongTextHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		req.ID = v
 	}
-	{
-		s := r.FormValue("offset")
-		if s != "" {
-			v, err := strconv.ParseUint(s, 10, 64)
-			if err != nil {
 
-				x.Log().Debug("can't parse offset", "error", err)
-				x.WriteError(ErrBadRequest)
-				return
-			}
-			req.Offset = &v
+	if s := q.Get("offset"); s != "" {
+		v, err := strconv.ParseUint(s, 10, 64)
+		if err != nil {
+
+			x.Log().Debug("can't parse offset", "error", err)
+			x.WriteError(ErrBadRequest)
+			return
 		}
+		req.Offset = &v
 	}
-	{
-		s := r.FormValue("limit")
-		if s != "" {
-			v, err := strconv.ParseUint(s, 10, 64)
-			if err != nil {
 
-				x.Log().Debug("can't parse limit", "error", err)
-				x.WriteError(ErrBadRequest)
-				return
-			}
-			if v == 0 {
+	if s := q.Get("limit"); s != "" {
+		v, err := strconv.ParseUint(s, 10, 64)
+		if err != nil {
 
-				x.Log().Debug("limit can not be 0")
-				x.WriteError(ErrBadRequest)
-				return
-			}
-			req.Limit = &v
+			x.Log().Debug("can't parse limit", "error", err)
+			x.WriteError(ErrBadRequest)
+			return
 		}
+		if v == 0 {
+
+			x.Log().Debug("limit can not be 0")
+			x.WriteError(ErrBadRequest)
+			return
+		}
+		req.Limit = &v
 	}
 
 	x.Log().Debug("http request parsed", "req", req)
@@ -390,7 +373,7 @@ type updateSongResponse struct {
 
 // updateSongHandler godoc
 //
-//	@Summary	List song library
+//	@Summary	Update song library  entry
 //	@Tags		songs
 //	@Produce	json
 //	@Param		id	path		uint				true	"Song id"

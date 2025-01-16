@@ -8,7 +8,6 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
         "/songs": {
@@ -36,7 +35,7 @@
                     {
                         "type": "string",
                         "description": "Song release date (example: 02.01.2006)",
-                        "name": "reliase",
+                        "name": "release",
                         "in": "query"
                     },
                     {
@@ -193,7 +192,7 @@
                 "tags": [
                     "songs"
                 ],
-                "summary": "List song library",
+                "summary": "Update song library  entry",
                 "parameters": [
                     {
                         "type": "integer",
@@ -318,7 +317,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.getSongResponse"
+                            "$ref": "#/definitions/handler.getSongTextResponse"
                         }
                     },
                     "400": {
@@ -381,6 +380,17 @@
             "properties": {
                 "song": {
                     "$ref": "#/definitions/handler.songDetail"
+                }
+            }
+        },
+        "handler.getSongTextResponse": {
+            "type": "object",
+            "properties": {
+                "verses": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

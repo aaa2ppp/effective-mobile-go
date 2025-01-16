@@ -79,6 +79,7 @@ func (x helper) WriteError(err error) {
 		}
 	}
 
+	x.w.Header().Add("content-type", "application/json") // XXX it must be before WriteHeader
 	x.w.WriteHeader(resp.Error.Code)
 	x.WriteResponse(&resp)
 }

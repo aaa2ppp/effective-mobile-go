@@ -26,6 +26,13 @@ definitions:
       song:
         $ref: '#/definitions/handler.songDetail'
     type: object
+  handler.getSongTextResponse:
+    properties:
+      verses:
+        items:
+          type: string
+        type: array
+    type: object
   handler.httpError:
     properties:
       code:
@@ -71,7 +78,6 @@ definitions:
       song:
         $ref: '#/definitions/handler.songDetail'
     type: object
-host: localhost:8080
 info:
   contact: {}
   license:
@@ -92,7 +98,7 @@ paths:
         type: string
       - description: 'Song release date (example: 02.01.2006)'
         in: query
-        name: reliase
+        name: release
         type: string
       - description: Song text should contain it
         in: query
@@ -255,7 +261,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handler.errorResponse'
-      summary: List song library
+      summary: Update song library  entry
       tags:
       - songs
   /songs/{id}/text:
@@ -280,7 +286,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.getSongResponse'
+            $ref: '#/definitions/handler.getSongTextResponse'
         "400":
           description: Bad Request
           schema:

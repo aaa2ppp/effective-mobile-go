@@ -132,8 +132,8 @@ func (r LocalRepo) ListSongs(ctx context.Context, req SongListFilters) ([]SongDe
 	}
 	if req.Text != nil {
 		idx++
-		filters = append(filters, fmt.Sprintf(`s.text = %%$%d%%`, idx))
-		values = append(values, req.Text)
+		filters = append(filters, fmt.Sprintf(`s.text ilike $%d`, idx))
+		values = append(values, fmt.Sprintf("%%%s%%", *req.Text))
 	}
 	if req.Release != nil {
 		idx++
@@ -165,7 +165,7 @@ func (r LocalRepo) ListSongs(ctx context.Context, req SongListFilters) ([]SongDe
 			if req.Offset != nil {
 				idx++
 				values = append(values, req.Offset)
-				return fmt.Sprintf("LIMIT $%d", idx)
+				return fmt.Sprintf("OFFSET $%d", idx)
 			}
 			return ""
 		}(),
@@ -210,9 +210,18 @@ type UpdateSongRequest = model.SongUpdate
 func (r LocalRepo) UpdateSong(ctx context.Context, req UpdateSongRequest) (SongDetail, error) {
 	x := newHelper(ctx, "UpdateSong")
 
+	// ВАЖНО: В RETURNING нужно указывать s1. Если указать s2, будут возвращены СТАРЫЕ (очевидно на момент JOIN?) значения.
 	var q = `
-		UPDATE song SET (%s /* fields */) = (%s /* placeholders */) id = $1
-		RETURNING s.id, s.name, g.name, s.release, s.text, s.link;
+		UPDATE song AS s1 SET (%s /* fields */) = (%s /* placeholders */)
+		FROM song AS s2 JOIN "group" AS g ON s2.group_id = g.id WHERE s2.id = $1
+		RETURNING s1.id, s1.name, g.name, s1.release, s1.text, s1.link;
+	`
+
+	// if only one field
+	var q2 = `
+		UPDATE song AS s1 SET %s = $2
+		FROM song AS s2 JOIN "group" AS g ON s2.group_id = g.id WHERE s2.id = $1
+		RETURNING s1.id, s1.name, g.name, s1.release, s1.text, s1.link;
 	`
 
 	var (
@@ -234,7 +243,7 @@ func (r LocalRepo) UpdateSong(ctx context.Context, req UpdateSongRequest) (SongD
 	if req.Release != nil {
 		idx++
 		fields = append(fields, "release")
-		values = append(values, req.Release)
+		values = append(values, req.Release.Time)
 		paceholders = append(paceholders, fmt.Sprintf("$%d", idx))
 	}
 	if req.Text != nil {
@@ -246,7 +255,7 @@ func (r LocalRepo) UpdateSong(ctx context.Context, req UpdateSongRequest) (SongD
 	if req.Link != nil {
 		idx++
 		fields = append(fields, "link")
-		values = append(values, req.Text)
+		values = append(values, req.Link)
 		paceholders = append(paceholders, fmt.Sprintf("$%d", idx))
 	}
 
@@ -255,7 +264,11 @@ func (r LocalRepo) UpdateSong(ctx context.Context, req UpdateSongRequest) (SongD
 	}
 
 	var zero SongDetail
-	q = fmt.Sprintf(q, strings.Join(fields, ","), strings.Join(paceholders, ","))
+	if len(fields) == 1 {
+		q = fmt.Sprintf(q2, fields[0])
+	} else {
+		q = fmt.Sprintf(q, strings.Join(fields, ","), strings.Join(paceholders, ","))
+	}
 
 	var song SongDetail
 
@@ -268,14 +281,14 @@ func (r LocalRepo) UpdateSong(ctx context.Context, req UpdateSongRequest) (SongD
 			return zero, ErrNotFound
 		}
 
-		x.Log().Error("can't query", "error", err, "query", q, "req", req)
+		x.Log().Error("can't query", "error", err, "query", q, "values", values, "req", req)
 		return zero, ErrInternalError
 	}
 
 	return song, nil
 }
 
-// DeleteSong удадаляет песню с указанным ID, если она есть в базе. НЕ возвращает ошибку,
+// DeleteSong удаляет песню с указанным ID, если она есть в базе. НЕ возвращает ошибку,
 // если песни нет в базе. Иными словами, гарантируется, что в случае успешного завершения,
 // в базе нет песни с указанным ID.
 func (r LocalRepo) DeleteSong(ctx context.Context, songID uint64) error {

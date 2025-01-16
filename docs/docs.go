@@ -43,7 +43,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Song release date (example: 02.01.2006)",
-                        "name": "reliase",
+                        "name": "release",
                         "in": "query"
                     },
                     {
@@ -200,7 +200,7 @@ const docTemplate = `{
                 "tags": [
                     "songs"
                 ],
-                "summary": "List song library",
+                "summary": "Update song library  entry",
                 "parameters": [
                     {
                         "type": "integer",
@@ -325,7 +325,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.getSongResponse"
+                            "$ref": "#/definitions/handler.getSongTextResponse"
                         }
                     },
                     "400": {
@@ -388,6 +388,17 @@ const docTemplate = `{
             "properties": {
                 "song": {
                     "$ref": "#/definitions/handler.songDetail"
+                }
+            }
+        },
+        "handler.getSongTextResponse": {
+            "type": "object",
+            "properties": {
+                "verses": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -466,7 +477,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Song Library",
