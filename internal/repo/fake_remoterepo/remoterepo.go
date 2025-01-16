@@ -14,7 +14,7 @@ type SongDetail = model.SongDetail
 
 type RemoteRepo struct{}
 
-func New(_ config.RemoteAPIConfig) RemoteRepo { return RemoteRepo{} }
+func New(_ config.RemoteAPI) RemoteRepo { return RemoteRepo{} }
 
 func (r RemoteRepo) GetSong(ctx context.Context, song SongDetail) (SongDetail, error) {
 	const op = "GetSong"

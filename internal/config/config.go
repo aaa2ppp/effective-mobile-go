@@ -4,7 +4,7 @@ import (
 	"log/slog"
 )
 
-type DBConfig struct {
+type DB struct {
 	Host     string
 	Port     int
 	Name     string
@@ -12,24 +12,24 @@ type DBConfig struct {
 	Password string
 }
 
-type ServerConfig struct {
+type Server struct {
 	Port int
 }
 
-type RemoteAPIConfig struct {
+type RemoteAPI struct {
 	URL string
 }
 
-type LoggerConfig struct {
+type Logger struct {
 	Level     slog.Level
 	PlainText bool
 }
 
 type Config struct {
-	Server    ServerConfig
-	DB        DBConfig
-	RemoteAPI RemoteAPIConfig
-	Logger    LoggerConfig
+	Server    Server
+	DB        DB
+	RemoteAPI RemoteAPI
+	Logger    Logger
 }
 
 func Load() (Config, error) {
@@ -38,20 +38,20 @@ func Load() (Config, error) {
 	const required = true
 
 	cfg := Config{
-		Server: ServerConfig{
+		Server: Server{
 			Port: ge.Int("SERVER_PORT", required, 8080),
 		},
-		DB: DBConfig{
+		DB: DB{
 			Host:     ge.String("DB_HOST", !required, "localhost"),
 			Port:     ge.Int("DB_PORT", !required, 5432),
 			Name:     ge.String("DB_NAME", required, "postgres"),
 			User:     ge.String("DB_USER", required, "postgres"),
 			Password: ge.String("DB_PASS", required, "postgres"),
 		},
-		RemoteAPI: RemoteAPIConfig{
+		RemoteAPI: RemoteAPI{
 			URL: ge.String("REMOTE_API_URL", required, "http://localhost:8081"),
 		},
-		Logger: LoggerConfig{
+		Logger: Logger{
 			Level:     ge.LogLevel("LOG_LEVEL", !required, slog.LevelInfo),
 			PlainText: ge.Bool("LOG_PLAINTEXT", !required, false),
 		},

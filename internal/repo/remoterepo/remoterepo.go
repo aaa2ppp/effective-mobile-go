@@ -30,7 +30,7 @@ type RemoteRepo struct {
 	url string
 }
 
-func New(cfg config.RemoteAPIConfig) RemoteRepo {
+func New(cfg config.RemoteAPI) RemoteRepo {
 	return RemoteRepo{
 		url: cfg.URL,
 	}

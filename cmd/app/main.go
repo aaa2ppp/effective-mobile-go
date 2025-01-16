@@ -99,7 +99,7 @@ func logFatal(msg string, err error) {
 	os.Exit(1)
 }
 
-func setupLogger(cfg config.LoggerConfig) {
+func setupLogger(cfg config.Logger) {
 
 	var h slog.Handler
 	if cfg.PlainText {
@@ -121,7 +121,7 @@ func setupLogger(cfg config.LoggerConfig) {
 	slog.SetDefault(slog.New(h))
 }
 
-func openDB(cfg config.DBConfig) (*sql.DB, error) {
+func openDB(cfg config.DB) (*sql.DB, error) {
 	const op = "openDB"
 
 	// urlExample := "postgres://username:password@localhost:5432/database_name"
@@ -149,7 +149,7 @@ func openDB(cfg config.DBConfig) (*sql.DB, error) {
 	return db, nil
 }
 
-func setupHTTPServer(handler http.Handler, cfg config.ServerConfig) *http.Server {
+func setupHTTPServer(handler http.Handler, cfg config.Server) *http.Server {
 	return &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
 		Handler:      handler,
