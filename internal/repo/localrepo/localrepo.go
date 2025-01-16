@@ -260,6 +260,7 @@ func (r LocalRepo) UpdateSong(ctx context.Context, req UpdateSongRequest) (SongD
 	}
 
 	if len(fields) == 0 {
+		x.Log().Debug("no any fields to update, return what we have", "req", req)
 		return r.GetSong(ctx, req.ID)
 	}
 
