@@ -1,22 +1,24 @@
+# Название workflow
 name: Merge Go Files
 
-# Запуск вручную
+# Условия запуска
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Запуск вручную
 
+# Задачи
 jobs:
-  merge:
-    runs-on: ubuntu-latest
+  merge:  # Идентификатор задачи
+    runs-on: ubuntu-latest  # ОС для запуска
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3  # Используем актуальную версию
+      - name: Checkout repository  # Шаг 1: Клонирование репозитория
+        uses: actions/checkout@v3
 
-      - name: Merge .go files
+      - name: Merge .go files  # Шаг 2: Объединение .go файлов
         run: |
           find . -name "*.go" -exec cat {} + > merged_go_files.txt
 
-      - name: Upload merged file as artifact
-        uses: actions/upload-artifact@v3  # Используем актуальную версию
+      - name: Upload merged file as artifact  # Шаг 3: Загрузка результата
+        uses: actions/upload-artifact@v3
         with:
           name: merged_go_files.txt
           path: merged_go_files.txt
